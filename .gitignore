@@ -102,6 +102,7 @@ local.properties
 # IntelliJ
 /out/
 .idea/
+reflection.iml
 # mpeltonen/sbt-idea plugin
 .idea_modules/
 
