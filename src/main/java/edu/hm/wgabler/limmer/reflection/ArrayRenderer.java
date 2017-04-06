@@ -12,6 +12,14 @@ package edu.hm.wgabler.limmer.reflection;
  */
 public class ArrayRenderer {
 
-//    public
+    public String render(int[] array) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("[");
+        for (int i : array) {
+            builder.append(i).append(", ");
+        }
+        builder.append("]");
+        return builder.toString();
+    }
 
 }

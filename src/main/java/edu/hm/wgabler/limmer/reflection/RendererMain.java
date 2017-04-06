@@ -24,7 +24,7 @@ public class RendererMain {
 
     static class SomeClass {
 
-        @RenderMe(with = "edu.hm.renderer.ArrayRenderer")
+        @RenderMe(with = "edu.hm.wgabler.limmer.reflection.ArrayRenderer")
         int[] array = {1, 2, 3,};
         @RenderMe
         private int foo;

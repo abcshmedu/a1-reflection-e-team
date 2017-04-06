@@ -9,8 +9,6 @@ package edu.hm.wgabler.limmer.reflection;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -34,35 +32,38 @@ public class Renderer {
                 .forEach(f -> {
                     try {
                         appendFieldInfo(f, builder);
-                    } catch (IllegalAccessException e) {
+                    } catch (IllegalAccessException | ClassNotFoundException | InstantiationException e) {
                         throw new RuntimeException(e);
                     }
                 });
-        Collection<Method> methods = Stream.of(object.getClass().getDeclaredMethods())
+        Stream.of(getObject().getClass().getDeclaredMethods())
                 .filter(m -> m.isAnnotationPresent(RenderMe.class))
                 .filter(m -> m.getParameterCount() == 0)
                 .filter(m -> !m.getReturnType().equals(Void.TYPE))
-                .collect(Collectors.toList());
-
-        if (!methods.isEmpty()) {
-            builder.append("Methods:\n");
-            methods.forEach(m -> {
-                try {
-                    appendMethodInfo(m, builder);
-                } catch (InvocationTargetException | IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-        }
+                .forEach(m -> {
+                    try {
+                        appendMethodInfo(m, builder);
+                    } catch (InvocationTargetException | IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
         return builder.toString();
     }
 
-    private void appendFieldInfo(Field field, StringBuilder builder) throws IllegalAccessException {
+    private void appendFieldInfo(Field field, StringBuilder builder) throws IllegalAccessException, ClassNotFoundException, InstantiationException {
         // TODO: check annotation for "with" parameter
         field.setAccessible(true);
         builder.append(field.getName())
-                .append(" (Type ").append(field.getType().getCanonicalName()).append("): ")
-                .append(field.get(getObject())).append("\n");
+                .append(" (Type ").append(field.getType().getCanonicalName()).append("): ");
+
+        final String with = field.getAnnotation(RenderMe.class).with();
+        if (with.equals("edu.hm.wgabler.limmer.reflection.ArrayRenderer")) {
+            ArrayRenderer renderer = (ArrayRenderer) Class.forName(with).newInstance();
+            final String rendered = renderer.render((int[]) field.get(getObject()));
+            builder.append(rendered).append("\n");
+        } else {
+            builder.append(field.get(getObject())).append("\n");
+        }
     }
 
     private void appendMethodInfo(Method method, StringBuilder builder) throws InvocationTargetException, IllegalAccessException {
@@ -70,8 +71,8 @@ public class Renderer {
         Object result = method.invoke(getObject());
         final String with = method.getAnnotation(RenderMe.class).with();
 
-        builder.append(method.getName())
-                .append(" (ReturnType ").append(method.getReturnType()).append("): ")
+        builder.append("Method ").append(method.getName())
+                .append(" (Type ").append(method.getReturnType()).append("): ")
                 .append(result).append("\n");
     }
 
