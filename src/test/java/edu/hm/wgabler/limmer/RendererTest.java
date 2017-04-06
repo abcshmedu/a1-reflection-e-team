@@ -29,48 +29,49 @@ import edu.hm.wgabler.limmer.reflection.Renderer;
  */
 @RunWith(Parameterized.class)
 public class RendererTest {
-	
-	/**
-	 * Create Parameters for the tests.
-	 * 
-	 * @return new Object, expected rendered String
-	 */
-	@Parameters
+
+     /**
+     * Create Parameters for the tests.
+     * 
+     * @return new Object, expected rendered String
+     */
+    @Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
                  { 
-                	 new SomeClass(22),
-                	 "Instance of edu.hm.wgabler.limmer.RendererTest.SomeClass\n" +
-             				"date (Type java.util.Date): Fri Jan 02 11:17:36 CET 1970\n" +
-             				"foo (Type int): 22\n"
+                     new SomeClass(2),
+                     "Instance of edu.hm.wgabler.limmer.RendererTest.SomeClass\n" 
+                             + "date (Type java.util.Date): Fri Jan 02 11:17:36 CET 1970\n" 
+                             + "foo (Type int): 2\n"
                  }, 
                  { 
-                	 new SomeIntClass(1),
-                	 "Instance of edu.hm.wgabler.limmer.RendererTest.SomeIntClass\n" +
-             				"bar (Type double): 42.0\n" +
-             				"foo (Type int): 1\n" +
-             				"Method returnDouble (Type double): 88.8\n" +
-             				"Method returnInt (Type int): 99\n" 
+                     new SomeIntClass(1),
+                     "Instance of edu.hm.wgabler.limmer.RendererTest.SomeIntClass\n" 
+                             + "bar (Type double): 42.0\n" 
+                             + "foo (Type int): 1\n" 
+                             + "Method returnDouble (Type double): 88.8\n" 
+                             + "Method returnInt (Type int): 99\n" 
                  },
                  {
-                	 new SomeMethodClass('a'),
-                	 "Instance of edu.hm.wgabler.limmer.RendererTest.SomeMethodClass\n" +
-                			 "foo (Type char): a\n" +
-                			 "Method returnSomeChar (Type char): X\n" +
-                			 "Method returnSomeString (Type java.lang.String): blahblahblah\n"
+                     new SomeMethodClass('a'),
+                     "Instance of edu.hm.wgabler.limmer.RendererTest.SomeMethodClass\n" 
+                             + "foo (Type char): a\n" 
+                             + "Method returnSomeChar (Type char): X\n" 
+                             + "Method returnSomeString (Type java.lang.String): blahblahblah\n"
                  },
                  {
-                	 new SomeArrayClass(new int[] {1, 2, 3}),
-                	 "Instance of edu.hm.wgabler.limmer.RendererTest.SomeArrayClass\n" + 
-                			 "intArray (Type int[]): [1, 2, 3, ]\n" + 
-                			 "Method returnIntArray (Type int[]): [11, 22, 33, ]\n"
+                     new SomeArrayClass(new int[] {1, 2, 0}),
+                     "Instance of edu.hm.wgabler.limmer.RendererTest.SomeArrayClass\n" 
+                             + "intArray (Type int[]): [1, 2, 0, ]\n" 
+                             + "Method returnIntArray (Type int[]): [11, 22, 33, ]\n"
                  }
-           });
+          });
     }
     
     /**
      * First value of the provided parameters.
      * An Object which should be rendered.
+     * Must be public because of initialization of parameter.
      */
     @Parameter
     public Object objectToRender;
@@ -84,53 +85,69 @@ public class RendererTest {
 
     /**
      * Parameterized Test which tests the RenderMe Reflection.
-     * @throws Exception
+     * @throws Exception exception
      */
-	@Test 
-	public void testRendering() throws Exception {
-		Renderer renderer = new Renderer(objectToRender);
-		assertEquals(expectedRendering, renderer.render());
-	}
-	
-	
+    @Test 
+    public void testRendering() throws Exception {
+        Renderer renderer = new Renderer(objectToRender);
+        assertEquals(expectedRendering, renderer.render());
+    }
+
+
     /**
      * SomeClass to test basic rendering.
      */
-	static class SomeClass {
+    static class SomeClass {
 
         @RenderMe
         private int foo;
         
         @RenderMe
-        private Date date = new Date(123456789);
+        private final Date date = new Date(123456789);
         
-        private int doNotRender = 42;
+        private final int doNotRender = 42;
 
-        public SomeClass(int foo) {
+        /**
+         * Constructor for SomeClass.
+         * @param foo some int value
+         */
+        SomeClass(int foo) {
             this.foo = foo;
         }
     }
-	
-	/**
-	 * SomeMethodClass to test rendering of methods.
-	 */
-	static class SomeMethodClass {
+
+    /**
+     * SomeMethodClass to test rendering of methods.
+     */
+    static class SomeMethodClass {
 
         @RenderMe
         private char foo;
 
-        public SomeMethodClass(char foo) {
+        /**
+         * Constructor.
+         * @param foo char value
+         */
+        SomeMethodClass(char foo) {
             this.foo = foo;
         }
 
+        /**
+         * Returns a char.
+         * @return char.
+         */
         @RenderMe
         public char returnSomeChar() {
-        	return 'X';
+            return 'X';
         }
         
+        /**
+         * Returns a string.
+         * @return String
+         */
         @RenderMe
         public String returnSomeString() {
-        	return "blahblahblah";
+            return "blahblahblah";
         }
         
         /**
@@ -138,7 +155,7 @@ public class RendererTest {
          * @return 0
          */
         public int doNotRenderMethod() {
-        	return 0;
+            return 0;
         }
         
         /**
@@ -146,9 +163,9 @@ public class RendererTest {
          * @param input some char
          * @return given input
          */
-        @RenderMe	
+        @RenderMe
         public char returnSomeCharWithParam(char input) {
-        	return input;
+            return input;
         }
         
         /**
@@ -157,29 +174,43 @@ public class RendererTest {
         @RenderMe
         public void noReturnValue() { }
     }
-	
-	/**
-	 * SomeIntClass to test rendering for int & double.
-	 */
-	static class SomeIntClass {
+
+    /**
+     * SomeIntClass to test rendering for int & double.
+     */
+    static class SomeIntClass {
 
         @RenderMe
         private int foo;
         @RenderMe
-        private double bar = 42.0;
+        private final double bar = 42.0;
 
-        public SomeIntClass(int foo) {
+        /**
+         * Constructor.
+         * @param foo an int value
+         */
+        SomeIntClass(int foo) {
             this.foo = foo;
         }
         
+        /**
+         * Return an int value.
+         * @return int
+         */
         @RenderMe
         private int returnInt() {
-        	return 99;
+            final int returnVal = 99;
+            return returnVal;
         }
         
+        /**
+         * Return a double value.
+         * @return double
+         */
         @RenderMe
         private double returnDouble() {
-        	return 88.8;
+            final double returnVal = 88.8;
+            return returnVal;
         }
         
         /**
@@ -188,44 +219,48 @@ public class RendererTest {
         @RenderMe
         private void doNotRenderVoid() { }
     }
-	
-	/**
-	 * SomeArrayClass to test rendering for int-arrays.
-	 */
-	static class SomeArrayClass {
-		
-		/**
-		 * Render with specified ArrayRenderer.
-		 */
-		@RenderMe(with="edu.hm.wgabler.limmer.reflection.ArrayRenderer")
-		int[] intArray;
-		
-		/**
-		 * Should not be rendered as there is no "@RenderMe".
-		 */
-		int[] doNotRender = {4, 5, 6};
-				
-		public SomeArrayClass(int[] array) {
-			intArray = array;
-		}
-		
-		/**
-		 * Render with ArrayRenderer.
-		 * @return int-array
-		 */
-		@RenderMe(with="edu.hm.wgabler.limmer.reflection.ArrayRenderer")
-		int[] returnIntArray() {
-			return new int[] {11, 22, 33};
-		}
-		
-		/**
-		 * Do not render as there is no "@RenderMe".
-		 * @return int-array
-		 */
-		int[] doNotRenderIntArray() {
-			return new int[] {44, 55, 66};
-		}
-	}
-	
 
+    /**
+     * SomeArrayClass to test rendering for int-arrays.
+     */
+    static class SomeArrayClass {
+
+        /**
+         * Render with specified ArrayRenderer.
+         */
+        @RenderMe(with = "edu.hm.wgabler.limmer.reflection.ArrayRenderer")
+        private int[] intArray;
+
+        /**
+         * Should not be rendered as there is no "@RenderMe".
+         */
+        private final int[] doNotRender = {4, 5, 6};
+
+        /**
+         * Constructor.
+         * @param array an int array
+         */
+        SomeArrayClass(int[] array) {
+            intArray = array;
+        }
+
+        /**
+         * Render with ArrayRenderer.
+         * @return int-array
+         */
+        @RenderMe(with = "edu.hm.wgabler.limmer.reflection.ArrayRenderer")
+        int[] returnIntArray() {
+            final int[] array = new int[] {11, 22, 33};
+            return array;
+        }
+
+        /**
+         * Do not render as there is no "@RenderMe".
+         * @return int-array
+         */
+        int[] doNotRenderIntArray() {
+            final int[] array = new int[] {44, 55, 66};
+            return array;
+        }
+    }
 }
