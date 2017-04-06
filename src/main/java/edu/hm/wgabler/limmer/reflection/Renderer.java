@@ -72,7 +72,7 @@ public class Renderer {
 
         builder.append(method.getName())
                 .append(" (ReturnType ").append(method.getReturnType()).append("): ")
-                .append(result);
+                .append(result).append("\n");
     }
 
     private Object getObject() {
