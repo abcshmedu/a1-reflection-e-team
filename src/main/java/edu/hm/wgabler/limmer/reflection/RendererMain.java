@@ -35,5 +35,9 @@ public class RendererMain {
             this.foo = foo;
         }
 
+        @RenderMe
+        public int bla() {
+            return 22;
+        }
     }
 }

@@ -9,6 +9,8 @@ package edu.hm.wgabler.limmer.reflection;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -33,20 +35,25 @@ public class Renderer {
                     try {
                         appendFieldInfo(f, builder);
                     } catch (IllegalAccessException e) {
-                        e.printStackTrace();
+                        throw new RuntimeException(e);
                     }
                 });
-        Stream.of(object.getClass().getDeclaredMethods())
+        Collection<Method> methods = Stream.of(object.getClass().getDeclaredMethods())
                 .filter(m -> m.isAnnotationPresent(RenderMe.class))
                 .filter(m -> m.getParameterCount() == 0)
                 .filter(m -> !m.getReturnType().equals(Void.TYPE))
-                .forEach(m -> {
-                    try {
-                        appendMethodInfo(m, builder);
-                    } catch (InvocationTargetException | IllegalAccessException e) {
-                        e.printStackTrace();
-                    }
-                });
+                .collect(Collectors.toList());
+
+        if (!methods.isEmpty()) {
+            builder.append("Methods:\n");
+            methods.forEach(m -> {
+                try {
+                    appendMethodInfo(m, builder);
+                } catch (InvocationTargetException | IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }
         return builder.toString();
     }
 
@@ -63,6 +70,9 @@ public class Renderer {
         Object result = method.invoke(getObject());
         final String with = method.getAnnotation(RenderMe.class).with();
 
+        builder.append(method.getName())
+                .append(" (ReturnType ").append(result.getClass().getTypeName()).append("): ")
+                .append(result);
     }
 
     private Object getObject() {
