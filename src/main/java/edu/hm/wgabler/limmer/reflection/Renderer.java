@@ -9,6 +9,7 @@ package edu.hm.wgabler.limmer.reflection;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Comparator;
 import java.util.stream.Stream;
 
 /**
@@ -29,6 +30,7 @@ public class Renderer {
         builder.append("Instance of ").append(getObject().getClass().getCanonicalName()).append('\n');
         Stream.of(getObject().getClass().getDeclaredFields())
                 .filter(f -> f.isAnnotationPresent(RenderMe.class))
+                .sorted(Comparator.comparing(Field::getName))
                 .forEach(f -> {
                     try {
                         appendFieldInfo(f, builder);
@@ -40,6 +42,7 @@ public class Renderer {
                 .filter(m -> m.isAnnotationPresent(RenderMe.class))
                 .filter(m -> m.getParameterCount() == 0)
                 .filter(m -> !m.getReturnType().equals(Void.TYPE))
+                .sorted(Comparator.comparing(Method::getName))
                 .forEach(m -> {
                     try {
                         appendMethodInfo(m, builder);
