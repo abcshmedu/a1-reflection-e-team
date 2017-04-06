@@ -39,7 +39,7 @@ public class Renderer {
         Stream.of(object.getClass().getDeclaredMethods())
                 .filter(m -> m.isAnnotationPresent(RenderMe.class))
                 .filter(m -> m.getParameterCount() == 0)
-                .filter(m -> m.getReturnType() != null)
+                .filter(m -> !m.getReturnType().equals(Void.class))
                 .forEach(m -> {
                     try {
                         appendMethodInfo(m, builder);
