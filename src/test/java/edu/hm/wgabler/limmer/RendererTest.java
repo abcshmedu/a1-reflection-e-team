@@ -34,14 +34,14 @@ public class RendererTest {
                  { 
                 	 new SomeClass(22),
                 	 "Instance of edu.hm.wgabler.limmer.RendererTest.SomeClass\n" +
-             				"foo (Type int): 22\n" +
-             				"date (Type java.util.Date): Fri Jan 02 11:17:36 CET 1970\n"
+             				"date (Type java.util.Date): Fri Jan 02 11:17:36 CET 1970\n" +
+             				"foo (Type int): 22\n"
                  }, 
                  { 
                 	 new SomeIntClass(1),
                 	 "Instance of edu.hm.wgabler.limmer.RendererTest.SomeIntClass\n" +
-             				"foo (Type int): 1\n" +
-             				"bar (Type double): 42.0\n"
+             				"bar (Type double): 42.0\n" +
+             				"foo (Type int): 1\n"
                  },
                  {
                 	 new SomeMethodClass('a'),
