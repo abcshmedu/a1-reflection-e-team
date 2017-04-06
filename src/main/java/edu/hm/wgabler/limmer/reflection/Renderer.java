@@ -69,7 +69,7 @@ public class Renderer {
         method.setAccessible(true);
         Object result = method.invoke(getObject());
         builder.append("Method ").append(method.getName())
-                .append(" (Type ").append(method.getReturnType()).append("): ");
+                .append(" (Type ").append(method.getReturnType().getCanonicalName()).append("): ");
 
         final String with = method.getAnnotation(RenderMe.class).with();
         if (with.equals("edu.hm.wgabler.limmer.reflection.ArrayRenderer")) {
