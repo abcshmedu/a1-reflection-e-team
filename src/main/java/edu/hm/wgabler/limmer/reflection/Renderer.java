@@ -71,7 +71,7 @@ public class Renderer {
         final String with = method.getAnnotation(RenderMe.class).with();
 
         builder.append(method.getName())
-                .append(" (ReturnType ").append(result.getClass().getTypeName()).append("): ")
+                .append(" (ReturnType ").append(method.getReturnType()).append("): ")
                 .append(result);
     }
 
