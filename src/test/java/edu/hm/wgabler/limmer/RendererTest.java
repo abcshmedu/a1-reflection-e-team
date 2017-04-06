@@ -42,6 +42,14 @@ public class RendererTest {
                 	 "Instance of edu.hm.wgabler.limmer.RendererTest.SomeIntClass\n" +
              				"foo (Type int): 1\n" +
              				"bar (Type double): 42.0\n"
+                 },
+                 {
+                	 new SomeMethodClass('a'),
+                	 "Instance of edu.hm.wgabler.limmer.RendererTest.SomeMethodClass\n" +
+                			 "foo (Type char): a\n" +
+                			 "Methods:\n" +
+                			 "returnSomeString (ReturnType class java.lang.String): blahblahblah\n" +
+                			 "returnSomeChar (ReturnType char): X\n"
                  }
            });
     }
@@ -66,10 +74,25 @@ public class RendererTest {
         public SomeClass(int foo) {
             this.foo = foo;
         }
+    }
+	
+	static class SomeMethodClass {
+
+        @RenderMe
+        private char foo;
+
+        public SomeMethodClass(char foo) {
+            this.foo = foo;
+        }
 
         @RenderMe
         public char returnSomeChar() {
         	return 'X';
+        }
+        
+        @RenderMe
+        public String returnSomeString() {
+        	return "blahblahblah";
         }
         
         public int doNotRenderMethod() {
