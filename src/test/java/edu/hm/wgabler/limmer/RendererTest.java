@@ -48,7 +48,7 @@ public class RendererTest {
                 	 "Instance of edu.hm.wgabler.limmer.RendererTest.SomeMethodClass\n" +
                 			 "foo (Type char): a\n" +
                 			 "Method returnSomeChar (Type char): X\n" +
-                			 "Method returnSomeString (Type class java.lang.String): blahblahblah\n"
+                			 "Method returnSomeString (Type java.lang.String): blahblahblah\n"
                  },
                  {
                 	 new SomeArrayClass(new int[] {1, 2, 3}),
