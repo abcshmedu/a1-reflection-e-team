@@ -59,6 +59,7 @@ public class Renderer {
     }
 
     private void appendMethodInfo(Method method, StringBuilder builder) throws InvocationTargetException, IllegalAccessException {
+        method.setAccessible(true);
         Object result = method.invoke(getObject());
         final String with = method.getAnnotation(RenderMe.class).with();
 
