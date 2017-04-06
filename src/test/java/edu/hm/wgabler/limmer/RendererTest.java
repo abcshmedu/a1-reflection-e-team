@@ -25,14 +25,10 @@ import edu.hm.wgabler.limmer.reflection.Renderer;
  * @author Wolfgang Gabler, wgabler@hm.edu
  * @since 27/03/2017
  */
-//@RunWith(Parameterized.class)
+@RunWith(Parameterized.class)
 public class RendererTest {
 	
-	private SomeClass toRender;
-	private Renderer renderer;
-	
-	
-	/*@Parameters
+	@Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
                  { 
@@ -50,11 +46,11 @@ public class RendererTest {
            });
     }
     
-    @Parameter // first value of parameters
+    @Parameter // first value of given parameters
     public Object objectToRender;
 
     @Parameter(1)
-    public String expectedRendering;*/
+    public String expectedRendering;
 
 	static class SomeClass {
 
@@ -76,15 +72,17 @@ public class RendererTest {
         	return 'X';
         }
         
-        @RenderMe
+        public int doNotRenderMethod() {
+        	return 0;
+        }
+        
+        @RenderMe	// should not render
         public char returnSomeCharWithParam(char input) {
         	return input;
         }
         
-        @RenderMe
-        public void noReturnValue() {
-        	return;
-        }
+        @RenderMe	// should not render
+        public void noReturnValue() { }
     }
 	
 	static class SomeIntClass {
@@ -99,22 +97,23 @@ public class RendererTest {
         }
     }
 	
-	/*@Test 
-	public void testRendering() throws Exception {
-		renderer = new Renderer(objectToRender);
-		assertEquals(expectedRendering, renderer.render());
-	}*/
-	
 	@Test 
+	public void testRendering() throws Exception {
+		Renderer renderer = new Renderer(objectToRender);
+		assertEquals(expectedRendering, renderer.render());
+	}
+	
+	/*@Test 
 	public void testMethodRendering() {
 		renderer = new Renderer(new SomeClass(3));
 		assertEquals(
 				"Instance of edu.hm.wgabler.limmer.RendererTest.SomeClass\n" +
          				"foo (Type int): 3\n" +
-         				"date (Type java.util.Date): Fri Jan 02 11:17:36 CET 1970\n", 
+         				"date (Type java.util.Date): Fri Jan 02 11:17:36 CET 1970\n" +
+         				"method ...", 
 				renderer.render());
 		
-	}
+	}*/
 	
 
 }
