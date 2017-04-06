@@ -47,9 +47,14 @@ public class RendererTest {
                 	 new SomeMethodClass('a'),
                 	 "Instance of edu.hm.wgabler.limmer.RendererTest.SomeMethodClass\n" +
                 			 "foo (Type char): a\n" +
-                			 "Methods:\n" +
-                			 "returnSomeString (ReturnType class java.lang.String): blahblahblah\n" +
-                			 "returnSomeChar (ReturnType char): X\n"
+                			 "Method returnSomeChar (Type char): X\n" +
+                			 "Method returnSomeString (Type class java.lang.String): blahblahblah\n"
+                 },
+                 {
+                	 new SomeArrayClass(new int[] {1, 2, 3}),
+                	 "Instance of edu.hm.wgabler.limmer.RendererTest.SomeArrayClass\n" + 
+                			 "intArray (Type int[]): [1, 2, 3, ]\n" + 
+                			 "Method returnIntArray (Type int[]): [11, 22, 33, ]\n"
                  }
            });
     }
@@ -60,6 +65,15 @@ public class RendererTest {
     @Parameter(1)
     public String expectedRendering;
 
+
+	@Test 
+	public void testRendering() throws Exception {
+		Renderer renderer = new Renderer(objectToRender);
+		assertEquals(expectedRendering, renderer.render());
+	}
+	
+	
+    
 	static class SomeClass {
 
         /*@RenderMe(with = "edu.hm.renderer.ArrayRenderer")
@@ -120,11 +134,29 @@ public class RendererTest {
         }
     }
 	
-	@Test 
-	public void testRendering() throws Exception {
-		Renderer renderer = new Renderer(objectToRender);
-		assertEquals(expectedRendering, renderer.render());
+	static class SomeArrayClass {
+		
+		@RenderMe(with="edu.hm.wgabler.limmer.reflection.ArrayRenderer")
+		int[] intArray = {1, 2, 3};
+		
+		// do not render
+		int[] doNotRender = {4, 5, 6};
+				
+		public SomeArrayClass(int[] array) {
+			intArray = array;
+		}
+		
+		@RenderMe(with="edu.hm.wgabler.limmer.reflection.ArrayRenderer")
+		int[] returnIntArray() {
+			return new int[] {11, 22, 33};
+		}
+		
+		// do not render
+		int[] doNotRenderIntArray() {
+			return new int[] {44, 55, 66};
+		}
 	}
+	
 	
 	/*@Test 
 	public void testMethodRendering() {
