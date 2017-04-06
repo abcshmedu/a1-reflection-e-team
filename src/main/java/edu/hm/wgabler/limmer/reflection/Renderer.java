@@ -43,7 +43,7 @@ public class Renderer {
                 .forEach(m -> {
                     try {
                         appendMethodInfo(m, builder);
-                    } catch (InvocationTargetException | IllegalAccessException e) {
+                    } catch (InvocationTargetException | IllegalAccessException | ClassNotFoundException | InstantiationException e) {
                         throw new RuntimeException(e);
                     }
                 });
@@ -51,7 +51,6 @@ public class Renderer {
     }
 
     private void appendFieldInfo(Field field, StringBuilder builder) throws IllegalAccessException, ClassNotFoundException, InstantiationException {
-        // TODO: check annotation for "with" parameter
         field.setAccessible(true);
         builder.append(field.getName())
                 .append(" (Type ").append(field.getType().getCanonicalName()).append("): ");
@@ -66,14 +65,20 @@ public class Renderer {
         }
     }
 
-    private void appendMethodInfo(Method method, StringBuilder builder) throws InvocationTargetException, IllegalAccessException {
+    private void appendMethodInfo(Method method, StringBuilder builder) throws InvocationTargetException, IllegalAccessException, ClassNotFoundException, InstantiationException {
         method.setAccessible(true);
         Object result = method.invoke(getObject());
-        final String with = method.getAnnotation(RenderMe.class).with();
-
         builder.append("Method ").append(method.getName())
-                .append(" (Type ").append(method.getReturnType()).append("): ")
-                .append(result).append("\n");
+                .append(" (Type ").append(method.getReturnType()).append("): ");
+
+        final String with = method.getAnnotation(RenderMe.class).with();
+        if (with.equals("edu.hm.wgabler.limmer.reflection.ArrayRenderer")) {
+            ArrayRenderer renderer = (ArrayRenderer) Class.forName(with).newInstance();
+            final String rendered = renderer.render((int[]) result);
+            builder.append(rendered).append("\n");
+        } else {
+            builder.append(result).append("\n");
+        }
     }
 
     private Object getObject() {
