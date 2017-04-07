@@ -1,9 +1,3 @@
-/*
- * Wolfgang Gabler
- *
- * Software: Mac OS X 10.12, Oracle Java 1.8.0_111 SE
- * System: Intel Core i7-4850HQ, 16 GByte RAM
- */
 package edu.hm.wgabler.limmer.reflection;
 
 import java.lang.annotation.ElementType;
@@ -20,6 +14,11 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD, ElementType.METHOD})
 public @interface RenderMe {
 
+    /**
+     * FQCN Renderer class to be used to render.
+     *
+     * @return FQCN class name.
+     */
     String with() default "";
 
 }
