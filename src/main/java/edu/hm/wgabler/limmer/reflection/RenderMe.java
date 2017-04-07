@@ -6,6 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Annotation to choose which fields and methods to render.
+ *
  * @author Wolfgang Gabler, wgabler@hm.edu
  * @author Andrea Limmer, limmer@hm.edu
  * @since 27/03/2017
