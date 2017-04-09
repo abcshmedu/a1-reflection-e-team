@@ -9,8 +9,8 @@ package edu.hm.wgabler.limmer.reflection;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
+import org.junit.experimental.runners.Enclosed;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,79 +24,102 @@ import static org.junit.Assert.assertEquals;
  * @author Andrea Limmer, limmer@hm.edu
  * @since 27/03/2017
  */
-@RunWith(Parameterized.class)
+@RunWith(Enclosed.class)
 public class RendererTest {
 
     /**
-     * Create Parameters for the tests.
-     *
-     * @return new Object, expected rendered String
+     * Parameterized Tests.
      */
-    @Parameters
-    public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][]{
-                {
-                        new SomeClass(2),
-                        "Instance of edu.hm.wgabler.limmer.reflection.RendererTest.SomeClass\n"
-                                + "date (Type java.util.Date): Fri Jan 02 11:17:36 CET 1970\n"
-                                + "foo (Type int): 2\n"
-                },
-                {
-                        new SomeIntClass(1),
-                        "Instance of edu.hm.wgabler.limmer.reflection.RendererTest.SomeIntClass\n"
-                                + "bar (Type double): 42.0\n"
-                                + "foo (Type int): 1\n"
-                                + "Method returnDouble (Type double): 88.8\n"
-                                + "Method returnInt (Type int): 99\n"
-                },
-                {
-                        new SomeMethodClass('a'),
-                        "Instance of edu.hm.wgabler.limmer.reflection.RendererTest.SomeMethodClass\n"
-                                + "foo (Type char): a\n"
-                                + "Method returnSomeChar (Type char): X\n"
-                                + "Method returnSomeString (Type java.lang.String): blahblahblah\n"
-                },
-                {
-                        new SomeArrayClass(new int[]{1, 2, 0}),
-                        "Instance of edu.hm.wgabler.limmer.reflection.RendererTest.SomeArrayClass\n"
-                                + "intArray (Type int[]): [1, 2, 0, ]\n"
-                                + "Method returnIntArray (Type int[]): [11, 22, 33, ]\n"
-                }
-        });
+    @RunWith(Parameterized.class)
+    public static class ParameterizedPart {
+
+       /**
+         * Create Parameters for the tests.
+         *
+         * @return new Object, expected rendered String
+         */
+        @Parameters
+        public static Collection<Object[]> data() {
+            return Arrays.asList(new Object[][]{
+                    {
+                            new SomeClass(2),
+                            "Instance of edu.hm.wgabler.limmer.reflection.RendererTest.SomeClass\n"
+                                    + "date (Type java.util.Date): Fri Jan 02 11:17:36 CET 1970\n"
+                                    + "foo (Type int): 2\n"
+                    },
+                    {
+                            new SomeIntClass(1),
+                            "Instance of edu.hm.wgabler.limmer.reflection.RendererTest.SomeIntClass\n"
+                                    + "bar (Type double): 42.0\n"
+                                    + "foo (Type int): 1\n"
+                                    + "Method returnDouble (Type double): 88.8\n"
+                                    + "Method returnInt (Type int): 99\n"
+                    },
+                    {
+                            new SomeMethodClass('a'),
+                            "Instance of edu.hm.wgabler.limmer.reflection.RendererTest.SomeMethodClass\n"
+                                    + "foo (Type char): a\n"
+                                    + "Method returnSomeChar (Type char): X\n"
+                                    + "Method returnSomeString (Type java.lang.String): blahblahblah\n"
+                    },
+                    {
+                            new SomeArrayClass(new int[]{1, 2, 0}),
+                            "Instance of edu.hm.wgabler.limmer.reflection.RendererTest.SomeArrayClass\n"
+                                    + "intArray (Type int[]): [1, 2, 0, ]\n"
+                                    + "Method returnIntArray (Type int[]): [11, 22, 33, ]\n"
+                    }
+            });
+        }
+        
+        /**
+         * Constructor that receives the parameters from above as arguments.
+         * @param object Object that should be rendered.
+         * @param expected Expected rendering.
+         */
+        public ParameterizedPart(Object object, String expected) {
+            objectToRender = object;
+            expectedRendering = expected;
+        }
+    
+        /**
+         * First value of the provided parameters.
+         * An Object which should be rendered.
+         * Must be public because of initialization of parameter.
+         */
+        private Object objectToRender;
+    
+        /**
+         * Second parameter.
+         * String that is expected to be rendered with the given object.
+         */
+        private String expectedRendering;
+    
+        /**
+         * Parameterized Test which tests the RenderMe Reflection.
+         *
+         * @throws Exception exception
+         */
+        @Test
+        public void testRendering() throws Exception {
+            Renderer renderer = new Renderer(objectToRender);
+            assertEquals(expectedRendering, renderer.render());
+        }
+        
     }
-
+    
     /**
-     * First value of the provided parameters.
-     * An Object which should be rendered.
-     * Must be public because of initialization of parameter.
+     * Test that is not parameterized.
      */
-    @Parameter
-    public Object objectToRender;
+    public static class NotParameterizedPart {
 
-    /**
-     * Second parameter.
-     * String that is expected to be rendered with the given object.
-     */
-    @Parameter(1)
-    public String expectedRendering;
+        /**
+         * Renderer Constructor should reject null-objects.
+         */
+        @Test(expected = NullPointerException.class)
+        public void ctorRejectsNull() {
+            new Renderer(null);
+        }
 
-    /**
-     * Parameterized Test which tests the RenderMe Reflection.
-     *
-     * @throws Exception exception
-     */
-    @Test
-    public void testRendering() throws Exception {
-        Renderer renderer = new Renderer(objectToRender);
-        assertEquals(expectedRendering, renderer.render());
-    }
-
-    /**
-     * Renderer Constructor should reject null-objects.
-     */
-    @Test(expected = NullPointerException.class)
-    public void ctorRejectsNull() {
-        new Renderer(null);
     }
 
     /**
@@ -194,7 +217,7 @@ public class RendererTest {
         private final double bar = 42.0;
         @RenderMe
         private int foo;
-
+        
         /**
          * Constructor.
          *
@@ -243,11 +266,14 @@ public class RendererTest {
          * Should not be rendered as there is no "@RenderMe".
          */
         private final int[] doNotRender = {4, 5, 6};
+        
         /**
          * Render with specified ArrayRenderer.
          */
         @RenderMe(with = "edu.hm.wgabler.limmer.reflection.ArrayRenderer")
         private int[] intArray;
+        
+        
 
         /**
          * Constructor.
